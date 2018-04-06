@@ -31,7 +31,7 @@ public class ReverseInt {
     }
 
     public static void main(String args[]){
-        System.out.println(reverse(-2147483648));
+        System.out.println(reverse(-214748364));
     }
 
 }
