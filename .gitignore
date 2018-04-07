@@ -3,3 +3,5 @@ bin/
 .classpath
 CtCIv6.eml
 CtCIv6.iml
+out/
+.idea/workspace.xml
