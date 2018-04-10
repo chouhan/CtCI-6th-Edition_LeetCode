@@ -5,3 +5,5 @@ CtCIv6.eml
 CtCIv6.iml
 out/
 .idea/workspace.xml
+.gitmodules
+.project
