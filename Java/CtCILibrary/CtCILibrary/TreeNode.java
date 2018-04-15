@@ -3,10 +3,10 @@ package CtCILibrary;
 /* One node of a binary tree. The data element stored is a single 
  * character.
  */
-public class TreeNode {
-	public int data;      
-	public TreeNode left;    
-	public TreeNode right; 
+public class TreeNode extends AbstractNode {
+	public int data;
+	public TreeNode left;
+	public TreeNode right;
 	public TreeNode parent;
 	private int size = 0;
 
@@ -101,4 +101,19 @@ public class TreeNode {
 	public void print() {
 		BTreePrinter.printNode(this);
 	}
-} 
+
+	@Override
+	public AbstractNode getLeft() {
+		return this.left;
+	}
+
+	@Override
+	public AbstractNode getRight() {
+		return this.right;
+	}
+
+	@Override
+	public int getData() {
+		return this.data;
+	}
+}

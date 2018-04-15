@@ -68,10 +68,15 @@ public class Player implements Comparable<Player> {
 
     @Override
     public int compareTo(Player o) {
-        return (this.getRanking() - o.getRanking());
+        return (o.getRanking() - this.getRanking());
     }
 
     public static void main(String[] args) {
+
+//        int[][] a = new int[][];
+        int[][] a = {};
+        System.out.println("a" + a);
+//        a = new int[][]{{0,1}};
         List<Player> footballTeam = new ArrayList<>();
         Player player1 = new Player(59, "John", 20);
         Player player2 = new Player(67, "Roger", 22);
