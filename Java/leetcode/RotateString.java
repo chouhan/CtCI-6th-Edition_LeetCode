@@ -24,5 +24,6 @@ public class RotateString {
 
     public static void main(String[] args){
         System.out.println(rotateString("abcde", "cdeab"));
+        System.out.println(rotateString("abcde", "fghij"));
     }
 }

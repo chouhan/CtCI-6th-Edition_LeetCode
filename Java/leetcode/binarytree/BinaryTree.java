@@ -379,6 +379,24 @@ public class BinaryTree {
     }
 
     /*
+    * Search in Binary Search Tree - Iteratively
+    *
+    * */
+
+    public Node searchBSTIteratively(Node node, int key){
+        while(node != null){
+            if(node.data == key){
+                return node;
+            } else if(key < node.data){
+                node = node.left;
+            } else {
+                node = node.right;
+            }
+        }
+        return null;
+    }
+
+    /*
     *
     * Insert a node in the Binary Search Tree - USING TWO POINTERS
     *
@@ -975,6 +993,14 @@ public class BinaryTree {
         System.out.println("\nSearch for key 30 (data) in Binary Search Tree");
         Node foundNode1 = binaryTree.searchBST(bstRoot, 30);
         System.out.println("\nFound Node " + foundNode1.data);
+
+        System.out.println("\nSearch for key 0 (data) in Binary Search Tree - ITERATIVELY");
+        Node foundNode3 = binaryTree.searchBSTIteratively(bstRoot, 0);
+        System.out.println("\nFound Node " + foundNode3.data);
+
+        System.out.println("\nSearch for key 30 (data) in Binary Search Tree - ITERATIVELY");
+        Node foundNode4 = binaryTree.searchBSTIteratively(bstRoot, 30);
+        System.out.println("\nFound Node " + foundNode4.data);
 
 
         // Create a Binary Search Tree
