@@ -735,6 +735,10 @@ public class BinaryTree {
         }
     }
 
+    /*
+    * Print a Binary Tree - Different Version
+    *
+    * */
     public static void printBinaryTree(Node root, int level){
         if(root==null)
             return;
@@ -749,6 +753,10 @@ public class BinaryTree {
         printBinaryTree(root.left, level+1);
     }
 
+    /*
+    * Print a Binary Tree - Another version
+    *
+    * */
     public void print(String prefix, Node n, boolean isLeft) {
         if (n != null) {
             System.out.println (prefix + (isLeft ? "|-- " : "\\-- ") + n.data);
@@ -756,6 +764,124 @@ public class BinaryTree {
             print(prefix + (isLeft ? "|   " : "    "), n.right, false);
         }
     }
+
+
+
+
+
+    /*
+    *
+    * Convert Binary Tree to Double Linked List - Solution 1
+    *
+    * */
+    public Node convertBTtoDLL1(Node node){
+        if(node == null){
+            return null;
+        }
+
+        node = binaryTreeToDoubleLinkedList(node);
+
+        // binaryTreeToDoubleLinkedList() returns root node of the converted
+        // DLL.  We need pointer to the leftmost node which is
+        // head of the constructed DLL, so move to the leftmost node
+
+        while (node.left != null){
+            node = node.left;
+        }
+
+        return node;
+    }
+
+
+    public Node binaryTreeToDoubleLinkedList(Node node){
+
+        if(node == null){
+            return node;
+        }
+
+        if(node.left != null){
+
+            // Convert the left sub tree
+            Node leftNode = binaryTreeToDoubleLinkedList(node.left);
+
+            // Find inorder predecessor. After this loop, left
+            // will point to the inorder predecessor
+            for(; leftNode.right != null; leftNode = leftNode.right);
+
+            // Make root as next of the predecessor
+            leftNode.right = node;
+
+            // Make predecssor as previous of root
+            node.left = leftNode;
+        }
+
+        if(node.right != null){
+
+            // Convert the right sub tree
+            Node rightNode = binaryTreeToDoubleLinkedList(node.right);
+
+            // Find inorder successor. After this loop, right
+            // will point to the inorder successor
+            for(; rightNode.left != null; rightNode = rightNode.left);
+
+            // Make root as previous of successor
+            rightNode.left = node;
+
+            // Make predessor as previous of root
+            node.right = rightNode;
+        }
+
+        return node;
+    }
+
+    /*
+    * Print Double LinkedList
+    *
+    * */
+    public void printDLL(Node node){
+        while(node != null){
+            System.out.print(node.data + " ");
+            node = node.right;
+        }
+    }
+
+
+    /*
+    *
+    * Convert a Binary Tree to a Double LinkedList - Solution 2
+    *
+    * https://www.geeksforgeeks.org/convert-given-binary-tree-doubly-linked-list-set-3/
+    *
+    * */
+
+    // head --> Pointer to head node of created doubly linked list
+    Node head = null;
+
+    // Initialize previously visited node as NULL. This is
+    // static so that the same value is accessible in all recursive
+    // calls
+    Node prev = null;
+
+    public void convertBTtoDLL2(Node node){
+        if(node == null){
+            return;
+        }
+
+        // Recursively convert left subtree
+        convertBTtoDLL2(node.left);
+
+        if(prev == null){
+            head = node;
+        } else {
+            node.left = prev;
+            prev.right = node;
+        }
+        prev = node;
+
+        // Finally convert right sub tree
+        convertBTtoDLL2(node.right);
+    }
+
 
     /*
     *
@@ -1062,6 +1188,13 @@ public class BinaryTree {
         /* ------------------------------------------------------------------------------------------------------------- */
 
         System.out.println(" --------------------------------------------------------------------------------------------------- ");
+//        System.out.println("\nConvert a Binary Tree to Double LinkedList - Solution 1\n");
+//        binaryTree.printDLL(binaryTree.convertBTtoDLL1(largestBSTInBT));
+//        19 15 18 18 20 25 25 20 25 35 40 50 55 60 70
+        System.out.println("\nConvert a Binary Tree to Double LinkedList - Solution 2\n");
+        new BTreePrinter().printNode(largestBSTInBT);
+        binaryTree.convertBTtoDLL2(largestBSTInBT);
+        binaryTree.printDLL(binaryTree.head);
 
     }
 }
