@@ -1,4 +1,4 @@
-// Arrays, linked lists, trees, etc. are best for
+package stack;// Arrays, linked lists, trees, etc. are best for
 // data that represents real objects.
 
 // Stacks & Queues are instead used to complete a 

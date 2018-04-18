@@ -37,8 +37,10 @@ import CtCILibrary.AbstractNode;
 import CtCILibrary.BTreePrinter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
 
@@ -327,6 +329,10 @@ public class BinaryTree {
      * SPACE COMPLEXITY: O(n)
      *
      * */
+
+    // Making this public so we can access the height of the Binary Tree or Binary Search tree.
+    public int heightCounter;
+
     public void levelOrderUsingOneQueueAndCounter(Node node){
         if(node == null){
             return;
@@ -336,8 +342,10 @@ public class BinaryTree {
         queue.offer(node);
         int levelCounter = 1;
         int currentCounter = 0;
+        heightCounter = 0;
 
         while(!queue.isEmpty()){
+            heightCounter++;
             while (levelCounter > 0){
                 node = queue.poll();
                 System.out.print(node.data + " ");
@@ -578,8 +586,90 @@ public class BinaryTree {
     }
 
     /*
+     *
+     * Get the Diameter of the Binary Tree
+     *
+     * Given a binary tree, you need to compute the length of the diameter of the tree.
+     * THE DIAMETER OF A BINARY TREE IS THE LENGTH OF THE LONGEST PATH BETWEEN ANY TWO NODES IN A TREE.
+     * This path may or may not pass through the root.
+     *
+     * https://leetcode.com/problems/diameter-of-binary-tree/description/
+     *
+     *
+     * */
+    int ans;
+    public int diameterOfBT(Node node){
+        ans = 1;
+        diameterOfBTUtil(node);
+        return ans -1;
+    }
+
+    public int diameterOfBTUtil(Node node){
+        if(node == null){
+            return 0;
+        }
+        int leftMax = diameterOfBTUtil(node.left);
+        int rightMax = diameterOfBTUtil(node.right);
+
+        ans = Math.max(ans, leftMax + rightMax + 1);
+        return Math.max(leftMax, rightMax) + 1;
+    }
+
+    /*
     *
-    * Size of the binary tree
+    * Get the diameter of the binary tree - iteratively
+    *
+    *
+    * */
+    public int diameterOfBTIteratively(Node root) {
+        if (root == null) {
+            return 0;
+        }
+
+        Stack<Node> stack = new Stack<>();
+        Map<Node, Integer> maxLengthMap = new HashMap<>();
+        stack.push(root);
+        int maxDiameter = 0;
+        boolean explored = false;
+        while (stack.size() != 0) {
+            Node node = stack.peek();
+            explored = (node.left != null && maxLengthMap.containsKey(node.left)) || node.left == null;
+            if (!explored && node.left != null) {
+                stack.push(node.left);
+            }
+            explored &= (node.right != null && maxLengthMap.containsKey(node.right)) || node.right == null;
+            if (!explored && node.right != null) {
+                stack.push(node.right);
+            }
+            //System.out.println("explored - " + explored + ", node val - " + node.val);
+            if (explored) {
+                int leftLength = maxLengthMap.getOrDefault(node.left, 0);
+                if (node.left != null) {
+                    leftLength += 1;
+                }
+                int rightLength = maxLengthMap.getOrDefault(node.right, 0);
+                if (node.right != null) {
+                    rightLength += 1;
+                }
+
+                //System.out.println("-- leftLength - " + leftLength + ", rightLength - " + rightLength);
+                maxLengthMap.put(node, Math.max(leftLength, rightLength));
+                int diameter = leftLength + rightLength;
+                if (maxDiameter < diameter) {
+                    maxDiameter = diameter;
+                }
+                stack.pop();
+            }
+        }
+        return maxDiameter;
+    }
+
+
+    /*
+    *
+    * Size of the binary tree.
+    *
+    * Given the root, return the total number of nodes in the binary tree
     *
     * */
     public int size(Node node){
@@ -594,14 +684,31 @@ public class BinaryTree {
 
     /*
     *
-    * Get the Height/Diameter of the Binary Tree
-    * Given a binary tree, you need to compute the length of the diameter of the tree.
-    * The diameter of a binary tree is the length of the longest path between any two nodes in a tree.
-    * This path may or may not pass through the root.
+    * Size of the binary tree.
     *
-    * https://leetcode.com/problems/diameter-of-binary-tree/description/
+    * Given the root, return the total number of nodes in the binary tree
     *
     * */
+    /*public int sizeIteratively(Node node){
+        if(node == null){
+            return 0;
+        }
+        int leftSize = size(node.left);
+        int rightSize = size(node.right);
+
+        return leftSize + rightSize + 1;
+    }*/
+
+    /*
+     * Height from root till the last leaf
+     *
+     * Given a binary tree, find its maximum depth.
+     * The maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
+     *
+     * https://leetcode.com/problems/maximum-depth-of-binary-tree/description/
+     *
+     *
+     * */
     public int height(Node node){
         if(node == null){
             return 0;
@@ -611,6 +718,55 @@ public class BinaryTree {
         int rightHeight = height(node.right);
 
         return Math.max(leftHeight, rightHeight) + 1;
+    }
+
+    /*
+    *
+    * Given a binary tree, find its maximum depth.
+    * The maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
+    *
+    * https://leetcode.com/problems/maximum-depth-of-binary-tree/description/
+    *
+    *
+    * */
+    public int heightIterative(Node node){
+        if(node == null){
+            return 0;
+        }
+
+        // See Level Order implementation using a queue and a counter
+        levelOrderUsingOneQueueAndCounter(node);
+        return heightCounter;
+
+        /*
+
+        THIS DOES NOT WORK
+
+        https://leetcode.com/problems/diameter-of-binary-tree/discuss/124198/Iterative-Accepted-Java-Solution
+
+        int overallNodeMax = 0;
+        Stack<Node> stack = new Stack<>();
+        Map<Node, Integer> nodePathCountMap = new HashMap<Node, Integer>();
+
+        stack.push(node);
+
+        while (!stack.isEmpty()){
+            Node currentNode = stack.peek();
+            if(currentNode.left != null && !nodePathCountMap.containsKey(currentNode.left)){
+                stack.push(currentNode.left);
+            } else if(currentNode.right != null && !nodePathCountMap.containsKey(currentNode.right)){
+                stack.push(currentNode.right);
+            } else {
+                // Get the root node end of post order
+                Node rootNode = stack.pop();
+                int leftMax = nodePathCountMap.getOrDefault(rootNode.left, -1);
+                int rightMax = nodePathCountMap.getOrDefault(rootNode.right, -1);
+                int nodeMax = 1 + Math.max(leftMax, rightMax);
+                nodePathCountMap.put(rootNode, nodeMax);
+                overallNodeMax = Math.max(overallNodeMax, leftMax + rightMax);
+            }
+        }
+        return overallNodeMax;*/
     }
 
     /*
@@ -671,6 +827,26 @@ public class BinaryTree {
         } else {
             return node.data;
         }
+    }
+
+    /*
+    * Find the LOWEST COMMON ANCESTOR in a BINARY SEARCH TREE - ITERATIVE
+    *
+    * @returns - int (lowest common ancestor)
+    *
+    * */
+
+    public int lowestCommonAncestorBSTIterative(Node node, int nodeData1, int nodeData2){
+        while(node != null){
+            if(node.data > Math.max(nodeData1, nodeData2)){
+                node = node.left;
+            } else if(node.data < Math.min(nodeData1, nodeData2)){
+                node = node.right;
+            } else {
+                return node.data;
+            }
+        }
+        return node.data;
     }
 
 
@@ -900,6 +1076,84 @@ public class BinaryTree {
         convertBTtoDLL2(node.right);
     }
 
+    /*
+    *
+    * Convert a Sorted Array to Binary Search Tree
+    *
+    * */
+    public Node sortedArrayToBST(int[] array){
+        if(array.length == 0){
+            return null;
+        }
+        return sortedArrayToBSTUtil(array, 0, array.length -1);
+    }
+
+    public Node sortedArrayToBSTUtil(int[] array, int start, int end){
+
+        if(start > end){
+            return null;
+        }
+
+        int mid = (start + end) / 2;
+        Node node = new Node();
+        node.data = array[mid];
+        node.left = sortedArrayToBSTUtil(array, start, mid-1);
+        node.right = sortedArrayToBSTUtil(array, mid+1, end);
+
+        return node;
+    }
+
+    /*
+    *
+    * Convert a Sorted Array to Binary Search Tree Iteratively
+    *
+    * A preOrder DFS Traversal Implementation.
+    *
+    * THIS DOES NOT WORK - GOES INTO INFINITE LOOP
+    *
+    * */
+    /*public Node sortedArrayToBSTIteratively(int[] num) {
+        if(num == null || num.length == 0) return null;
+        Stack<Node> stack = new Stack<Node>();
+        // initialize
+        Node root = new Node();
+        root.data = num[(num.length-1)/2];
+        TreeNode rootNode = new TreeNode(0,num.length-1,root);
+        stack.push(root);
+        // iteration
+        while(!stack.isEmpty()){
+            Node node = stack.pop();
+            int middle = (rootNode.low + rootNode.up)/2; // cut half for [low, up]
+            // [low, middle-1]
+            if(middle-1 >= rootNode.low){
+                Node leftnode = new Node();
+                leftnode.data = num[(middle - 1 + rootNode.low)/2];
+                rootNode.t.left = leftnode;
+                TreeNode left = new TreeNode(rootNode.low, middle - 1, leftnode);
+                stack.push(leftnode);
+            }
+            // [middle+1, up]
+            if(middle + 1 <= rootNode.up){
+                Node rightnode = new Node();
+                rightnode.data = num[(middle + 1 + rootNode.up)/2];
+                rootNode.t.right = rightnode;
+                TreeNode right = new TreeNode(middle + 1, rootNode.up, rightnode);
+                stack.push(rightnode);
+            }
+        }
+        return root;
+    }
+
+    class TreeNode{ // need another class to store multi information
+        int low, up; // means the TreeNode covers [low, up], low and up are all index
+        Node t;
+        TreeNode(int l, int p, Node node){
+            low = l;
+            up = p;
+            t = node;
+        }
+    }*/
+
 
     /*
     *
@@ -1046,10 +1300,16 @@ public class BinaryTree {
         new BTreePrinter().printNode(toReverse);
 
         System.out.println("");
+        System.out.println("\nThe diameter of Binary Search Tree bstRoot is " + binaryTree.diameterOfBT(bstRoot));
+
+        System.out.println("");
         System.out.println("\nThe size of Binary Search Tree bstRoot is " + binaryTree.size(bstRoot));
 
         System.out.println("");
         System.out.println("\nThe Height/Diameter of Binary Search Tree bstRoot is " + binaryTree.height(bstRoot));
+
+        System.out.println("");
+        System.out.println("\nThe Height/Diameter of Binary Search Tree bstRoot ITERATIVELY is " + binaryTree.heightIterative(bstRoot));
 
         System.out.println("");
         System.out.println("Binary Tree Print ");
@@ -1133,6 +1393,19 @@ public class BinaryTree {
         System.out.println("\nLowest Common Ancestor in BINARY SEARCH TREE");
         System.out.println("The lowest common ancestor is -10, 30 is " + binaryTree.lowestCommonAncestor(bstRoot, -10, 30));
 
+
+        System.out.println("\nLowest Common Ancestor in BINARY SEARCH TREE - ITERATIVELY");
+        System.out.println("The lowest common ancestor for -10, 0 is " + binaryTree.lowestCommonAncestorBSTIterative(bstRoot, -10, 0));
+
+        System.out.println("\nLowest Common Ancestor in BINARY SEARCH TREE - ITERATIVELY");
+        System.out.println("The lowest common ancestor is 30, 36 is " + binaryTree.lowestCommonAncestorBSTIterative(bstRoot, 30, 36));
+
+        System.out.println("\nLowest Common Ancestor in BINARY SEARCH TREE - ITERATIVELY");
+        System.out.println("The lowest common ancestor is 5, 7 is " + binaryTree.lowestCommonAncestorBSTIterative(bstRoot, 5, 7));
+
+        System.out.println("\nLowest Common Ancestor in BINARY SEARCH TREE - ITERATIVELY");
+        System.out.println("The lowest common ancestor is -10, 30 is " + binaryTree.lowestCommonAncestorBSTIterative(bstRoot, -10, 30));
+
         System.out.println("");
         System.out.println("\n ---------------------------------------------------------------------------------------------- ");
         System.out.println("\n\n");
@@ -1208,6 +1481,7 @@ public class BinaryTree {
 //        binaryTree.printBinaryTree(largestBSTInBT, 0);
 
         binaryTree.print("", largestBSTInBT, false);
+        System.out.println("\nThis should not be a BST. Check Valid BST - " + binaryTree.isBST(largestBSTInBT));
         System.out.println("The largest BST in this BT is " + binaryTree.largestBSTInBT(largestBSTInBT));
 
 
@@ -1221,6 +1495,82 @@ public class BinaryTree {
         new BTreePrinter().printNode(largestBSTInBT);
         binaryTree.convertBTtoDLL2(largestBSTInBT);
         binaryTree.printDLL(binaryTree.head);
+
+        /* ------------------------------------------------------------------------------------------------------------- */
+
+        System.out.println(" --------------------------------------------------------------------------------------------------- ");
+
+        System.out.println("\nConvert a sorted Array to Binary Search Tree.");
+        int[] sortedArray = {1,2,3,4,5,6,7,8,9};
+        Node sortedBST = binaryTree.sortedArrayToBST(sortedArray);
+        new BTreePrinter().printNode(sortedBST);
+        System.out.println();
+
+        /*System.out.println("Convert a sorted Array to Binary Search Tree - ITERATIVELY.");
+        int[] sortedArray1 = {1,2,3,4,5,6,7,8,9};
+        Node sortedBST1 = binaryTree.sortedArrayToBSTIteratively(sortedArray1);
+        new BTreePrinter().printNode(sortedBST1);
+        System.out.println();*/
+
+
+        Node largestBST = new Node();
+        largestBST.data = 26;
+
+        largestBST.left = new Node();
+        largestBST.left.data = 19;
+
+        largestBST.left.left = new Node();
+        largestBST.left.left.data = 17;
+
+        largestBST.left.left.right = new Node();
+        largestBST.left.left.right.data = 18;
+
+        largestBST.left.right = new Node();
+        largestBST.left.right.data = 21;
+
+        largestBST.left.right.left = new Node();
+        largestBST.left.right.left.data = 20;
+
+        largestBST.left.right.right = new Node();
+        largestBST.left.right.right.data = 25;
+
+        largestBST.right = new Node();
+        largestBST.right.data = 50;
+
+        largestBST.right.left = new Node();
+        largestBST.right.left.data = 35;
+
+        largestBST.right.left.right = new Node();
+        largestBST.right.left.right.data = 40;
+
+        largestBST.right.left.left = new Node();
+        largestBST.right.left.left.data = 30;
+
+        largestBST.right.left.left.right = new Node();
+        largestBST.right.left.left.right.data = 34;
+
+        largestBST.right.right = new Node();
+        largestBST.right.right.data = 60;
+
+        largestBST.right.right.left = new Node();
+        largestBST.right.right.left.data = 55;
+
+        largestBST.right.right.right = new Node();
+        largestBST.right.right.right.data = 70;
+
+        System.out.println(" ------------------------------------------------------------------------------------------------- ");
+        new BTreePrinter().printNode(largestBST);
+        System.out.println("Is BST " + binaryTree.isBST(largestBST));
+        System.out.println("Height of the BST " + binaryTree.height(largestBST));
+        System.out.println("Height of the BST Iterative is " + binaryTree.heightIterative(largestBST));
+
+
+        System.out.println("");
+        System.out.println("\nThe diameter of Binary Tree largestBST is " + binaryTree.diameterOfBT(largestBST));
+
+        System.out.println("");
+        System.out.println("\nThe diameter of Binary Tree Iteratively largestBST is " + binaryTree.diameterOfBTIteratively(largestBST));
+
 
     }
 }

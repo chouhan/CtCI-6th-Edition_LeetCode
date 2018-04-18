@@ -1,6 +1,11 @@
+package queue;
+
 import java.util.Arrays;
 
-
+/*
+* newthinktank.com
+*
+* */
 public class TheQueue {
 	
 	private String[] queueArray;
