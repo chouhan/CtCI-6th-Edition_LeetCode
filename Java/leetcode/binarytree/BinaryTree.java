@@ -37,12 +37,15 @@ import CtCILibrary.AbstractNode;
 import CtCILibrary.BTreePrinter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class BinaryTree {
 
@@ -435,6 +438,46 @@ public class BinaryTree {
         return node;
     }
 
+    /*
+    *
+    * Create/Insert the array of integers in BST
+    *
+    *
+    * */
+    Node root;
+    public void createBST(int[] integers){
+        for(int integer: integers){
+            createBSTNode(integer);
+        }
+    }
+
+    public Node createBSTNode(int integer){
+        if(root == null){
+            root = new Node(null, null, integer);
+            return root;
+        }
+
+        Node currentNode = root;
+
+        while(true){
+            if(integer < currentNode.data){
+                if(currentNode.left == null){
+                    currentNode.left = new Node(null, null, integer);
+                    break;
+                }
+                currentNode = currentNode.left;
+            } else {
+                if(currentNode.right == null) {
+                    currentNode.right = new Node(null, null, integer);
+                    break;
+                }
+                currentNode = currentNode.right;
+            }
+        }
+
+        return currentNode;
+    }
+
 
     /*
     *
@@ -812,6 +855,113 @@ public class BinaryTree {
     }
 
     /*
+    *
+    * Print the sum of all nodes of a binary tree, excluding leaf node values
+    *
+    *
+    * */
+    public Integer sumAllExcludingLeavesUsingQueue(Node root) {
+        int sum = 0;
+        Node temp;
+        Queue<Node> q = new LinkedBlockingDeque<>();
+        q.add(root);
+        while (!q.isEmpty()) {
+            temp = q.poll();
+            if((temp.getLeft()!=null && temp.getRight()==null) ||
+                (temp.getLeft()==null && temp.getRight()!=null) ||
+                (temp.getLeft()!=null && temp.getRight()!=null))
+                sum += temp.getData();
+            if (temp.getLeft() != null)
+                q.add((Node) temp.getLeft());
+            if (temp.getRight() != null)
+                q.add((Node) temp.getRight());
+        }
+        return sum;
+    }
+
+    /*
+    *
+    * Print the sum of all nodes of a binary tree, excluding leaf node values
+    *
+    *
+    * */
+    private static Integer sumAllExcludingLeavesUsingStack(Node root) {
+        int sum = 0;
+        Node temp = root;
+        Stack<Node> s = new Stack<Node>();
+        s.push(root);
+        while(temp != null){
+
+            if(s.isEmpty())
+                break;
+            temp = s.pop();
+            if(temp.getLeft()!= null || temp.getRight()!=null)
+                sum = sum+ temp.getData();
+            if(temp.getLeft()!= null){
+                s.push((Node) temp.getLeft());
+                if(temp.getRight()!= null)
+                    s.push((Node) temp.getRight());
+            }
+        }
+        return sum;
+    }
+
+    /*
+    * Design an algorithm to serialize and deserialize a binary tree.
+    * There is no restriction on how your serialization/deserialization algorithm should work.
+    * You just need to ensure that a binary tree can be serialized to a string and this string
+    * can be deserialized to the original tree structure.
+    *
+    * https://leetcode.com/problems/serialize-and-deserialize-binary-tree/description/
+    *
+    * The idea is simple: print the tree in pre-order traversal and use "X" to denote null node and split node with ",".
+    * We can use a StringBuilder for building the string on the fly. For deserializing,
+    * we use a Queue to store the pre-order traversal and since we have "X" as null node,
+    * we know exactly how to where to end building subtress.
+    *
+    * https://leetcode.com/problems/serialize-and-deserialize-binary-tree/discuss/74253/Easy-to-understand-Java-Solution
+    *
+    * */
+    private static final String spliter = ",";
+    private static final String NN = "X";
+
+    // Encodes a tree to a single string.
+    public String serialize(Node root) {
+        StringBuilder sb = new StringBuilder();
+        buildString(root, sb);
+        return sb.toString();
+    }
+
+    // Pre-Order Traversal
+    private void buildString(Node node, StringBuilder sb) {
+        if (node == null) {
+            sb.append(NN).append(spliter);
+        } else {
+            sb.append(node.data).append(spliter);
+            buildString(node.left, sb);
+            buildString(node.right,sb);
+        }
+    }
+    // Decodes your encoded data to tree.
+    public Node deserialize(String data) {
+        Deque<String> nodes = new LinkedList<>();
+        nodes.addAll(Arrays.asList(data.split(spliter)));
+        return buildTree(nodes);
+    }
+
+    private Node buildTree(Deque<String> nodes) {
+        String val = nodes.remove();
+        if (val.equals(NN)) return null;
+        else {
+            Node node = new Node();
+            node.data = Integer.valueOf(val);
+            node.left = buildTree(nodes);
+            node.right = buildTree(nodes);
+            return node;
+        }
+    }
+
+    /*
     * Find the LOWEST COMMON ANCESTOR in a BINARY SEARCH TREE
     *
     * @returns - int (lowest common ancestor)
@@ -1161,8 +1311,18 @@ public class BinaryTree {
     *
     * */
     public static void main(String[] args){
-
         BinaryTree binaryTree = new BinaryTree();
+
+        System.out.println(" --------------------------------------------------------------------------------------------------- ");
+
+        System.out.println("\nCreate a Binary Search Tree.");
+        int[] array = {-1,-2,-3,-4,-5,-6,-7,-8,-9,0,1,2,3,4,5,6,7,8,9};
+        binaryTree.createBST(array);
+        binaryTree.print("", binaryTree.root, false);
+//        new BTreePrinter().printNode(binaryTree.root);
+        System.out.println();
+
+
 
         // Binary Tree Creation
         Node root = new Node();

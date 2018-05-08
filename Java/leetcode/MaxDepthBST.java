@@ -7,7 +7,7 @@ public class MaxDepthBST {
     // Driver - [3,9,20,null,null,15,7,6,7,5,4,3]
 
     public static void main(String args[]){
-        MaxDepthBST minDepthBSTMain = new MaxDepthBST();
+        MaxDepthBST maxDepthBSTMain = new MaxDepthBST();
 
         TreeNode node = new TreeNode(3);
         node.left = new TreeNode(9);
@@ -19,7 +19,7 @@ public class MaxDepthBST {
         node.right.right = new TreeNode(7);
         node.right.right.left = new TreeNode(5);
         node.right.right.right = new TreeNode(4);
-        System.out.println("Maximum Depth is " + minDepthBSTMain.maxDepthBST(node));
+        System.out.println("Maximum Depth is " + maxDepthBSTMain.maxDepthBST(node));
     }
 
     public static class TreeNode {
